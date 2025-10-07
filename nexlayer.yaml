@@ -1,0 +1,36 @@
+application:
+  name: pern-todo-list
+  pods:
+    # Frontend - React app with nginx
+    - name: frontend
+      image: registry.nexlayer.io/nexlayer-mcp/nexlayer/pern-todo-frontend:f0b6df1
+      path: /
+      servicePorts:
+        - 80
+
+    # Backend API - Express.js
+    - name: api
+      image: registry.nexlayer.io/nexlayer-mcp/nexlayer/pern-todo-api:f0b6df1
+      servicePorts:
+        - 3000
+      vars:
+        POSTGRES_HOST: database.pod
+        POSTGRES_USERNAME: todouser
+        POSTGRES_PASSWORD: todopass123
+        POSTGRES_DB: tododb
+        PORT: "3000"
+        NODE_ENV: production
+
+    # Database - PostgreSQL
+    - name: database
+      image: registry.nexlayer.io/nexlayer-mcp/nexlayer/pern-todo-database:db754ca
+      servicePorts:
+        - 5432
+      vars:
+        POSTGRES_USER: todouser
+        POSTGRES_PASSWORD: todopass123
+        POSTGRES_DB: tododb
+      volumes:
+        - name: postgres-data
+          size: 1Gi
+          mountPath: /var/lib/postgresql
